@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useSupabase } from "@/hooks/use-supabase";
-import { PlusIcon, ExternalLinkIcon, CopyIcon, TrashIcon, EditIcon, Twitter, Linkedin, SendIcon } from "lucide-react";
+import { PlusIcon, ExternalLinkIcon, CopyIcon, TrashIcon, EditIcon, MessageCircle, Briefcase, SendIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -60,8 +60,8 @@ export function PlannerView() {
 
   const getPlatformIcon = (platform: string) => {
     switch (platform) {
-      case 'twitter': return <Twitter className="size-4" />;
-      case 'linkedin': return <Linkedin className="size-4" />;
+      case 'twitter': return <MessageCircle className="size-4" />;
+      case 'linkedin': return <Briefcase className="size-4" />;
       case 'reddit': return <SendIcon className="size-4" />; // Using SendIcon for Reddit approximation
       default: return null;
     }
@@ -123,7 +123,7 @@ export function PlannerView() {
             onChange={e => setSearch(e.target.value)} 
             className="w-full sm:w-64 bg-zinc-50 border-zinc-200"
           />
-          <Select value={platformFilter} onValueChange={setPlatformFilter}>
+          <Select value={platformFilter} onValueChange={(val) => setPlatformFilter(val || "all")}>
             <SelectTrigger className="w-[140px] bg-zinc-50 border-zinc-200">
               <SelectValue placeholder="Platform" />
             </SelectTrigger>
@@ -134,7 +134,7 @@ export function PlannerView() {
               <SelectItem value="reddit">Reddit</SelectItem>
             </SelectContent>
           </Select>
-          <Select value={statusFilter} onValueChange={setStatusFilter}>
+          <Select value={statusFilter} onValueChange={(val) => setStatusFilter(val || "all")}>
             <SelectTrigger className="w-[140px] bg-zinc-50 border-zinc-200">
               <SelectValue placeholder="Status" />
             </SelectTrigger>

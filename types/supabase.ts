@@ -224,6 +224,53 @@ export type Database = {
           },
         ]
       }
+      social_posts: {
+        Row: {
+          id: string
+          user_id: string
+          platform: string
+          title: string
+          content: string | null
+          status: string
+          scheduled_at: string | null
+          notes: string | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          platform: string
+          title: string
+          content?: string | null
+          status?: string
+          scheduled_at?: string | null
+          notes?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          platform?: string
+          title?: string
+          content?: string | null
+          status?: string
+          scheduled_at?: string | null
+          notes?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "social_posts_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["clerk_user_id"]
+          }
+        ]
+      }
       profiles: {
         Row: {
           avatar_url: string | null
