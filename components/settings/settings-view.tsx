@@ -2,7 +2,7 @@
 
 import { useQuery } from "@tanstack/react-query";
 import { useSupabase } from "@/hooks/use-supabase";
-import { useUser, UserProfile } from "@clerk/nextjs";
+import { useUser, UserProfile, useClerk } from "@clerk/nextjs";
 import { useTheme } from "next-themes";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -11,6 +11,7 @@ import { toast } from "sonner";
 
 export function SettingsView() {
   const { user } = useUser();
+  const { signOut } = useClerk();
   const supabase = useSupabase();
   const { theme, setTheme } = useTheme();
 
@@ -142,6 +143,19 @@ export function SettingsView() {
 
               <div className="pt-4 flex justify-end">
                 <Button onClick={handleSave}>Save Preferences</Button>
+              </div>
+            </div>
+          </div>
+          <div>
+            <h3 className="text-lg font-medium text-red-600">Account Actions</h3>
+            <p className="text-sm text-zinc-500 mb-4">Manage your account session.</p>
+            <div className="border border-red-200 dark:border-red-900/50 rounded-xl p-6 bg-red-50/50 dark:bg-red-950/10">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h4 className="font-medium text-red-900 dark:text-red-400">Sign Out</h4>
+                  <p className="text-sm text-red-600 dark:text-red-500">Log out of your account on this device.</p>
+                </div>
+                <Button variant="destructive" onClick={() => signOut()}>Sign Out</Button>
               </div>
             </div>
           </div>

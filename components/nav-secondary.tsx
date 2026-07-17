@@ -2,6 +2,8 @@
 
 import * as React from "react"
 import Link from "next/link"
+import { usePathname } from "next/navigation"
+import { motion } from "framer-motion"
 
 import {
   SidebarGroup,
@@ -21,18 +23,38 @@ export function NavSecondary({
     icon: React.ReactNode
   }[]
 } & React.ComponentPropsWithoutRef<typeof SidebarGroup>) {
+  const pathname = usePathname();
+
   return (
     <SidebarGroup {...props}>
       <SidebarGroupContent>
         <SidebarMenu>
-          {items.map((item) => (
-            <SidebarMenuItem key={item.title}>
-              <SidebarMenuButton render={<Link href={item.url} />}>
-                {item.icon}
-                <span>{item.title}</span>
-              </SidebarMenuButton>
-            </SidebarMenuItem>
-          ))}
+          {items.map((item) => {
+            const isActive = pathname === item.url || pathname.startsWith(item.url + "/");
+            return (
+              <SidebarMenuItem key={item.title}>
+                <motion.div whileTap={{ scale: 0.98 }} transition={{ type: "spring", bounce: 0, duration: 0.3 }}>
+                  <SidebarMenuButton 
+                    isActive={isActive} 
+                    className="relative overflow-hidden group"
+                    render={<Link href={item.url} />}
+                  >
+                    {isActive && (
+                      <motion.div
+                        layoutId="activeNavSecondary"
+                        className="absolute inset-0 bg-zinc-200 dark:bg-zinc-800 rounded-md z-0"
+                        transition={{ type: "spring", bounce: 0, duration: 0.3 }}
+                      />
+                    )}
+                    <div className="relative z-10 flex items-center gap-2">
+                      {item.icon}
+                      <span>{item.title}</span>
+                    </div>
+                  </SidebarMenuButton>
+                </motion.div>
+              </SidebarMenuItem>
+            );
+          })}
         </SidebarMenu>
       </SidebarGroupContent>
     </SidebarGroup>
