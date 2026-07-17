@@ -2,7 +2,7 @@
 
 import { useQuery } from "@tanstack/react-query";
 import { useSupabase } from "@/hooks/use-supabase";
-import { Activity, Calendar, Clock, FileEdit, CheckCircle2, LucideIcon, Plus, Settings, ArrowRight, Sparkles, Trash, Image as ImageIcon } from "lucide-react";
+import { Activity, Calendar, Clock, FileEdit, CheckCircle2, LucideIcon, Plus, Settings, ArrowRight, Sparkles, Trash, Image as ImageIcon, Megaphone } from "lucide-react";
 import { motion, Variants } from "framer-motion";
 import Link from "next/link";
 import { buttonVariants } from "@/components/ui/button";
@@ -32,7 +32,23 @@ export function DashboardView() {
     }
   });
 
-  if (statsLoading || activityLoading) {
+  const { data: socialPosts, isLoading: socialLoading } = useQuery({
+    queryKey: ['dashboard-social-posts'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('social_posts')
+        .select('*')
+        .order('scheduled_at', { ascending: true });
+      if (error) throw error;
+      return data;
+    }
+  });
+
+  const scheduledSocialPosts = socialPosts?.filter(p => p.status === 'scheduled') || [];
+  const draftSocialPosts = socialPosts?.filter(p => p.status === 'draft') || [];
+
+
+  if (statsLoading || activityLoading || socialLoading) {
     return <div className="animate-pulse space-y-6">
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         {[1,2,3,4].map(i => <div key={i} className="h-32 bg-zinc-200 dark:bg-zinc-800 rounded-2xl" />)}
@@ -93,8 +109,8 @@ export function DashboardView() {
       <motion.div variants={container} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <StatCard title="Posts this month" value={stats?.thisMonth || 0} icon={Calendar} color="text-blue-500" bg="bg-blue-500/10" />
         <StatCard title="Scheduled" value={stats?.scheduled || 0} icon={Clock} color="text-purple-500" bg="bg-purple-500/10" />
-        <StatCard title="Ready to post" value={stats?.ready || 0} icon={CheckCircle2} color="text-green-500" bg="bg-green-500/10" />
-        <StatCard title="Drafts" value={stats?.drafts || 0} icon={FileEdit} color="text-yellow-500" bg="bg-yellow-500/10" />
+        <StatCard title="Social Scheduled" value={scheduledSocialPosts.length} icon={Megaphone} color="text-orange-500" bg="bg-orange-500/10" />
+        <StatCard title="Social Drafts" value={draftSocialPosts.length} icon={FileEdit} color="text-yellow-500" bg="bg-yellow-500/10" />
       </motion.div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">

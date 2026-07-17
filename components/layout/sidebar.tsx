@@ -15,7 +15,8 @@ import {
   Clock,
   Home,
   MessageCircle,
-  Briefcase
+  Briefcase,
+  Megaphone
 } from "lucide-react";
 import { UserButton, useUser } from "@clerk/nextjs";
 
@@ -31,6 +32,7 @@ export function Sidebar({ isCollapsed, toggleSidebar }: SidebarProps) {
   const navItems = [
     { name: "Dashboard", href: "/dashboard", icon: Home },
     { name: "Calendar", href: "/calendar", icon: Calendar },
+    { name: "Social Planner", href: "/planner", icon: Megaphone },
     { name: "Library", href: "/library", icon: Library },
     { name: "Inbox", href: "/inbox", icon: Inbox },
   ];

@@ -17,12 +17,17 @@ const PostDialog = dynamic(() => import("./post-dialog").then(m => m.PostDialog)
   ssr: false,
 });
 
+const PlannerDialog = dynamic(() => import("@/components/planner/planner-dialog").then(m => m.PlannerDialog), { ssr: false });
+
 type Post = Database["public"]["Tables"]["posts"]["Row"];
+import { CalendarSocialPost } from "./calendar-social-post";
 
 export function CalendarView() {
   const [currentDate, setCurrentDate] = useState(new Date());
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [isPlannerDialogOpen, setIsPlannerDialogOpen] = useState(false);
   const [selectedPost, setSelectedPost] = useState<Post | null>(null);
+  const [selectedSocialPost, setSelectedSocialPost] = useState<any | null>(null);
   const [defaultDate, setDefaultDate] = useState<string>("");
   const [activeId, setActiveId] = useState<string | null>(null);
   const [view, setView] = useState<'month' | 'week'>('month');
@@ -49,6 +54,22 @@ export function CalendarView() {
     }
   });
 
+  const { data: socialPosts, refetch: refetchSocial } = useQuery({
+    queryKey: ['social_posts', format(dateStart, 'yyyy-MM-dd'), view],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('social_posts')
+        .select('*')
+        // Filter by scheduled_at or created_at to be within range.
+        // But some drafts might not have scheduled_at.
+        // Let's just fetch all social posts for now to avoid complex queries on nullable dates.
+        .order('created_at', { ascending: false });
+      
+      if (error) throw error;
+      return data;
+    }
+  });
+
   // Realtime subscription
   useEffect(() => {
     const channel = supabase
@@ -60,12 +81,19 @@ export function CalendarView() {
           refetch();
         }
       )
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'social_posts' },
+        (payload) => {
+          refetchSocial();
+        }
+      )
       .subscribe();
 
     return () => {
       supabase.removeChannel(channel);
     };
-  }, [supabase, refetch]);
+  }, [supabase, refetch, refetchSocial]);
 
   // Global event listener for new post
   useEffect(() => {
@@ -185,6 +213,13 @@ export function CalendarView() {
               
               {days.map(day => {
                 const dayPosts = posts?.filter(p => p.date === format(day, 'yyyy-MM-dd')) || [];
+                const daySocialPosts = socialPosts?.filter(p => {
+                  if (p.scheduled_at) {
+                    return format(new Date(p.scheduled_at), 'yyyy-MM-dd') === format(day, 'yyyy-MM-dd');
+                  }
+                  return format(new Date(p.created_at), 'yyyy-MM-dd') === format(day, 'yyyy-MM-dd');
+                }) || [];
+
                 return (
                   <div 
                     key={day.toISOString()}
@@ -193,7 +228,7 @@ export function CalendarView() {
                       if ((e.target as HTMLElement).closest('[data-post="true"]')) return;
                       setDefaultDate(format(day, 'yyyy-MM-dd'));
                       setSelectedPost(null);
-                      setIsDialogOpen(true);
+                      setIsDialogOpen(true); // By default, create standard post
                     }}
                   >
                     <CalendarDay day={day} currentDate={currentDate}>
@@ -208,6 +243,17 @@ export function CalendarView() {
                           }}
                         >
                           <CalendarPost post={post} />
+                        </div>
+                      ))}
+                      {daySocialPosts.map(post => (
+                        <div key={post.id} data-post="true">
+                          <CalendarSocialPost 
+                            post={post}
+                            onClick={() => {
+                              setSelectedSocialPost(post);
+                              setIsPlannerDialogOpen(true);
+                            }}
+                          />
                         </div>
                       ))}
                     </CalendarDay>
@@ -225,6 +271,12 @@ export function CalendarView() {
         open={isDialogOpen} 
         onOpenChange={setIsDialogOpen}
         post={selectedPost}
+        defaultDate={defaultDate}
+      />
+      <PlannerDialog
+        open={isPlannerDialogOpen}
+        onOpenChange={setIsPlannerDialogOpen}
+        post={selectedSocialPost}
         defaultDate={defaultDate}
       />
     </DndContext>

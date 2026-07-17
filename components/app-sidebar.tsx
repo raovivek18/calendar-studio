@@ -15,7 +15,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar"
-import { LayoutDashboardIcon, ListIcon, ChartBarIcon, FolderIcon, Settings2Icon, CommandIcon } from "lucide-react"
+import { LayoutDashboardIcon, ListIcon, ChartBarIcon, FolderIcon, Settings2Icon, CommandIcon, MegaphoneIcon } from "lucide-react"
 
 const data = {
   navMain: [
@@ -32,6 +32,14 @@ const data = {
       url: "/calendar",
       icon: (
         <ListIcon
+        />
+      ),
+    },
+    {
+      title: "Social Planner",
+      url: "/planner",
+      icon: (
+        <MegaphoneIcon
         />
       ),
     },
