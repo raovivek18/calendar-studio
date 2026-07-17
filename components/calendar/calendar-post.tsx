@@ -65,9 +65,7 @@ export const CalendarPost = memo(function CalendarPost({ post, isOverlay = false
         {!isOverlay && (
           <div 
             className="cursor-grab opacity-0 group-hover:opacity-100 p-0.5 hover:bg-black/5 dark:hover:bg-white/10 rounded active:cursor-grabbing focus-visible:opacity-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-500"
-            role="button"
             aria-label="Drag to move post"
-            tabIndex={0}
             {...listeners} 
             {...attributes}
           >
