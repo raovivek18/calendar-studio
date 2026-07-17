@@ -6,10 +6,6 @@ import { Activity, Calendar, Clock, FileEdit, CheckCircle2, LucideIcon, Plus, Se
 import { motion, Variants } from "framer-motion";
 import Link from "next/link";
 import { buttonVariants } from "@/components/ui/button";
-import { SectionCards } from "@/components/section-cards";
-import { ChartAreaInteractive } from "@/components/chart-area-interactive";
-import { DataTable } from "@/components/data-table";
-import data from "./data.json";
 
 export function DashboardView() {
   const supabase = useSupabase();
@@ -60,7 +56,7 @@ export function DashboardView() {
 
   const item: Variants = {
     hidden: { opacity: 0, y: 20 },
-    show: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 300, damping: 24 } }
+    show: { opacity: 1, y: 0, transition: { type: "spring" as any, stiffness: 300, damping: 24 } }
   };
 
   const getActivityIcon = (action: string) => {
@@ -92,15 +88,13 @@ export function DashboardView() {
         </div>
       </div>
 
-        </div>
-      </div>
 
-      <motion.div variants={item}>
-        <SectionCards />
-      </motion.div>
 
-      <motion.div variants={item} className="w-full">
-        <ChartAreaInteractive />
+      <motion.div variants={container} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <StatCard title="Posts this month" value={stats?.thisMonth || 0} icon={Calendar} color="text-blue-500" bg="bg-blue-500/10" />
+        <StatCard title="Scheduled" value={stats?.scheduled || 0} icon={Clock} color="text-purple-500" bg="bg-purple-500/10" />
+        <StatCard title="Ready to post" value={stats?.ready || 0} icon={CheckCircle2} color="text-green-500" bg="bg-green-500/10" />
+        <StatCard title="Drafts" value={stats?.drafts || 0} icon={FileEdit} color="text-yellow-500" bg="bg-yellow-500/10" />
       </motion.div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -172,10 +166,38 @@ export function DashboardView() {
           </div>
         </motion.div>
       </div>
+    </motion.div>
+  );
+}
 
-      <motion.div variants={item} className="w-full">
-        <DataTable data={data} />
-      </motion.div>
+interface StatCardProps {
+  title: string;
+  value: number;
+  icon: LucideIcon;
+  color: string;
+  bg: string;
+}
+
+const itemVariant: Variants = {
+  hidden: { opacity: 0, scale: 0.95 },
+  show: { opacity: 1, scale: 1, transition: { type: "spring" as any, stiffness: 300, damping: 24 } }
+};
+
+function StatCard({ title, value, icon: Icon, color, bg }: StatCardProps) {
+  return (
+    <motion.div variants={itemVariant} className="group relative bg-white dark:bg-zinc-950 p-6 rounded-2xl border border-zinc-200 dark:border-zinc-800 shadow-sm hover:shadow-md transition-all hover:-translate-y-1 overflow-hidden">
+      <div className="absolute inset-0 bg-gradient-to-br from-white/50 to-transparent dark:from-white/5 opacity-0 group-hover:opacity-100 transition-opacity" />
+      <div className="flex flex-col gap-4 relative">
+        <div className="flex items-center justify-between">
+          <div className={`p-3 rounded-xl ${bg} ${color} transition-transform group-hover:scale-110`}>
+            <Icon size={20} strokeWidth={2.5} />
+          </div>
+        </div>
+        <div>
+          <p className="text-4xl font-bold tracking-tight text-zinc-900 dark:text-zinc-50">{value}</p>
+          <p className="text-sm font-medium text-zinc-500 dark:text-zinc-400 mt-1">{title}</p>
+        </div>
+      </div>
     </motion.div>
   );
 }
