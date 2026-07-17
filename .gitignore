@@ -65,3 +65,6 @@ Desktop.ini
 supabase/.temp
 supabase/.branches
 supabase/functions/*/node_modules/
+
+# AI agent configurations
+.agents/
