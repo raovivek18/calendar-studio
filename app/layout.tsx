@@ -1,9 +1,11 @@
-import { ClerkProvider, SignInButton, SignUpButton, Show, UserButton } from "@clerk/nextjs";
+import { ClerkProvider } from "@clerk/nextjs";
 import { shadcn } from "@clerk/ui/themes";
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { SyncUser } from "@/components/sync-user";
+import { Providers } from "@/components/providers";
+import { Toaster } from "sonner";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -17,7 +19,7 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "Flowboard",
-  description: "Your social dashboard for scheduling and events.",
+  description: "Minimalist social media planning and task scheduling dashboard.",
 };
 
 export default function RootLayout({
@@ -29,25 +31,15 @@ export default function RootLayout({
     <html
       lang="en"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+      suppressHydrationWarning
     >
-      <body className="min-h-full flex flex-col">
+      <body className="min-h-full flex flex-col bg-zinc-50 dark:bg-zinc-950 text-zinc-900 dark:text-zinc-50">
         <ClerkProvider appearance={{ theme: shadcn }}>
-          <SyncUser />
-          <header className="flex justify-between items-center p-4 border-b border-zinc-200 dark:border-zinc-800">
-            <div className="font-bold text-lg">Flowboard</div>
-            <div className="flex gap-4">
-              <Show when="signed-out">
-                <SignInButton />
-                <SignUpButton />
-              </Show>
-              <Show when="signed-in">
-                <UserButton />
-              </Show>
-            </div>
-          </header>
-          <main className="flex-1">
+          <Providers>
+            <SyncUser />
             {children}
-          </main>
+            <Toaster />
+          </Providers>
         </ClerkProvider>
       </body>
     </html>
