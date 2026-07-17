@@ -16,8 +16,6 @@
 # next.js
 /.next/
 /out/
-
-# production
 /build
 
 # misc
@@ -30,8 +28,12 @@ yarn-debug.log*
 yarn-error.log*
 .pnpm-debug.log*
 
-# env files (can opt-in for committing if needed)
+# environments & secrets
+# Ignore all env files by default to protect API keys (Clerk, Supabase, etc.)
 .env*
+# Except example environments
+!.env.example
+!.env.template
 
 # vercel
 .vercel
@@ -39,3 +41,27 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# OS generated files
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+Desktop.ini
+
+# IDEs and Editors
+.idea/
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+*.swp
+*.swo
+
+# Supabase Local Development
+supabase/.temp
+supabase/.branches
+supabase/functions/*/node_modules/
