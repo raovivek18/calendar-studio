@@ -85,7 +85,7 @@ export function SettingsView() {
                   <h4 className="font-medium">Theme</h4>
                   <p className="text-sm text-zinc-500">Select your preferred color theme.</p>
                 </div>
-                <Select value={theme} onValueChange={(val) => setTheme(val)}>
+                <Select value={theme} onValueChange={(val) => { if (val) setTheme(val) }}>
                   <SelectTrigger className="w-32">
                     <SelectValue placeholder="Theme" />
                   </SelectTrigger>
@@ -104,7 +104,7 @@ export function SettingsView() {
                   <h4 className="font-medium">Timezone</h4>
                   <p className="text-sm text-zinc-500">Used for scheduling your posts.</p>
                 </div>
-                <Select value={timezone} onValueChange={(val) => setTimezone(val)}>
+                <Select value={timezone} onValueChange={(val) => { if (val) setTimezone(val) }}>
                   <SelectTrigger className="w-48">
                     <SelectValue placeholder="Timezone" />
                   </SelectTrigger>

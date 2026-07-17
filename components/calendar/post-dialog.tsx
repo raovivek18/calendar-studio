@@ -1,5 +1,6 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -11,7 +12,6 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useSupabase } from "@/hooks/use-supabase";
 import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { useState } from "react";
 import type { Database } from "@/types/supabase";
 
 type Post = Database["public"]["Tables"]["posts"]["Row"];
@@ -158,7 +158,7 @@ export function PostDialog({ open, onOpenChange, post, defaultDate }: PostDialog
               <label className="text-sm font-medium">Platform</label>
               <Select 
                 value={form.watch("platform")} 
-                onValueChange={(val: string) => form.setValue("platform", val as any)}
+                onValueChange={(val) => { if (val) form.setValue("platform", val as any) }}
                 disabled={isWorking}
               >
                 <SelectTrigger>
@@ -177,7 +177,7 @@ export function PostDialog({ open, onOpenChange, post, defaultDate }: PostDialog
               <label className="text-sm font-medium">Status</label>
               <Select 
                 disabled={isWorking}
-                onValueChange={(val: string) => form.setValue("status", val as any)} 
+                onValueChange={(val) => { if (val) form.setValue("status", val as any) }} 
                 value={form.watch("status")}
               >
                 <SelectTrigger>
