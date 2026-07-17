@@ -13,7 +13,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Flowboard",
+  title: "Calendar Studio",
   description: "Minimalist social media planning and task scheduling dashboard.",
 };
 

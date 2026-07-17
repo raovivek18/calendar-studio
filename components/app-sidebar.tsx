@@ -82,7 +82,12 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
               render={<a href="/dashboard" />}
             >
               <CommandIcon className="size-5!" />
-              <span className="text-base font-semibold">Flowboard</span>
+              <span className="text-base font-semibold flex items-center">
+                Calendar
+                <span className="ml-1 -translate-y-1 rounded-md bg-zinc-900 px-1.5 py-0.5 text-[10px] uppercase tracking-wider text-white dark:bg-zinc-100 dark:text-zinc-900">
+                  Studio
+                </span>
+              </span>
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>

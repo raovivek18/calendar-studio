@@ -1,6 +1,8 @@
-# Flowboard
+# Calendar studio
 
-A minimalist, modern social media planning and task scheduling dashboard, built as a production-ready SaaS application.
+**Calendar studio is an open-source project!** A minimalist, modern social media planning and task scheduling dashboard, built as a production-ready SaaS application.
+
+**Live Demo:** [https://calendar-studio-one.vercel.app](https://calendar-studio-one.vercel.app)
 
 ## Features
 
@@ -26,15 +28,14 @@ A minimalist, modern social media planning and task scheduling dashboard, built 
 ## Setup & Local Development
 
 ### 1. Environment Variables
-Create a `.env.local` file in the root directory:
 
-```env
-NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_test_...
-CLERK_SECRET_KEY=sk_test_...
+Copy the provided `.env.example` file to create your local `.env.local` file:
 
-NEXT_PUBLIC_SUPABASE_URL=https://...
-NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJ...
+```bash
+cp .env.example .env.local
 ```
+
+You will need to fill in the keys from both [Clerk](https://clerk.com) (for Authentication) and [Supabase](https://supabase.com) (for Database) in your new `.env.local` file.
 
 ### 2. Install Dependencies
 ```bash

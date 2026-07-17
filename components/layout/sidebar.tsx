@@ -43,7 +43,14 @@ export function Sidebar({ isCollapsed, toggleSidebar }: SidebarProps) {
       )}
     >
       <div className="flex h-16 items-center justify-between border-b border-zinc-200 px-4 dark:border-zinc-800">
-        {!isCollapsed && <span className="font-semibold tracking-tight text-lg">Flowboard</span>}
+        {!isCollapsed && (
+          <span className="font-semibold tracking-tight text-lg flex items-center">
+            Calendar
+            <span className="ml-1 -translate-y-1 rounded-md bg-zinc-900 px-1.5 py-0.5 text-[10px] uppercase tracking-wider text-white dark:bg-zinc-100 dark:text-zinc-900">
+              Studio
+            </span>
+          </span>
+        )}
         <button
           onClick={toggleSidebar}
           className="rounded-md p-1 hover:bg-zinc-100 dark:hover:bg-zinc-800"
