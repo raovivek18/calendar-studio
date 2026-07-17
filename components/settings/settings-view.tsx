@@ -16,6 +16,11 @@ export function SettingsView() {
 
   const [timezone, setTimezone] = useState("UTC");
   const [notificationsEnabled, setNotificationsEnabled] = useState(true);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const { data: settings } = useQuery({
     queryKey: ['settings', user?.id],
@@ -85,7 +90,7 @@ export function SettingsView() {
                   <h4 className="font-medium">Theme</h4>
                   <p className="text-sm text-zinc-500">Select your preferred color theme.</p>
                 </div>
-                <Select value={theme} onValueChange={(val) => { if (val) setTheme(val) }}>
+                <Select value={mounted ? theme : undefined} onValueChange={(val) => { if (val) setTheme(val) }}>
                   <SelectTrigger className="w-32">
                     <SelectValue placeholder="Theme" />
                   </SelectTrigger>

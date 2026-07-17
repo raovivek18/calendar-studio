@@ -49,14 +49,14 @@ export function DashboardView() {
     show: {
       opacity: 1,
       transition: {
-        staggerChildren: 0.1
+        staggerChildren: 0.05
       }
     }
   };
 
   const item: Variants = {
-    hidden: { opacity: 0, y: 20 },
-    show: { opacity: 1, y: 0, transition: { type: "spring" as any, stiffness: 300, damping: 24 } }
+    hidden: { opacity: 0, y: 15 },
+    show: { opacity: 1, y: 0, transition: { type: "spring" as any, bounce: 0, duration: 0.6 } }
   };
 
   const getActivityIcon = (action: string) => {
@@ -98,8 +98,8 @@ export function DashboardView() {
       </motion.div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <motion.div variants={item} className="col-span-1 lg:col-span-2 bg-white dark:bg-zinc-950 rounded-2xl border border-zinc-200 dark:border-zinc-800 shadow-sm overflow-hidden flex flex-col">
-          <div className="p-6 border-b border-zinc-100 dark:border-zinc-900 flex justify-between items-center bg-zinc-50/50 dark:bg-zinc-900/20">
+        <motion.div variants={item} className="col-span-1 lg:col-span-2 bg-white dark:bg-zinc-900/50 rounded-2xl border border-zinc-200 dark:border-zinc-800/80 shadow-[inset_0_1px_1px_rgba(255,255,255,0.02)] overflow-hidden flex flex-col">
+          <div className="p-6 border-b border-zinc-100 dark:border-zinc-800/80 flex justify-between items-center bg-zinc-50/50 dark:bg-zinc-900/20">
             <h3 className="font-semibold text-zinc-900 dark:text-zinc-50">Upcoming Content</h3>
             <Link href="/calendar" className={buttonVariants({ variant: "ghost", size: "sm", className: "text-xs text-zinc-500 hover:text-zinc-900 rounded-full h-8" })}>
               View Calendar <ArrowRight size={14} className="ml-1" />
@@ -108,10 +108,14 @@ export function DashboardView() {
           
           <div className="flex-1 p-6 flex flex-col items-center justify-center text-center">
             <motion.div 
-              initial={{ scale: 0.9, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              transition={{ delay: 0.3, type: "spring" }}
-              className="w-16 h-16 rounded-2xl bg-zinc-100 dark:bg-zinc-900 flex items-center justify-center mb-4"
+              initial={{ scale: 0.9, opacity: 0, y: 0 }}
+              animate={{ scale: 1, opacity: 1, y: [0, -6, 0] }}
+              transition={{ 
+                scale: { type: "spring" as any, bounce: 0, duration: 0.6, delay: 0.2 },
+                opacity: { duration: 0.6, delay: 0.2 },
+                y: { repeat: Infinity, duration: 4, ease: "easeInOut", delay: 0.5 } as any
+              }}
+              className="w-16 h-16 rounded-2xl bg-zinc-100 dark:bg-zinc-900/80 flex items-center justify-center mb-4 border border-zinc-200 dark:border-zinc-800/50 shadow-sm"
             >
               <Calendar className="h-8 w-8 text-zinc-400 dark:text-zinc-500" />
             </motion.div>
@@ -123,8 +127,8 @@ export function DashboardView() {
           </div>
         </motion.div>
 
-        <motion.div variants={item} className="bg-white dark:bg-zinc-950 rounded-2xl border border-zinc-200 dark:border-zinc-800 shadow-sm overflow-hidden flex flex-col">
-          <div className="p-6 border-b border-zinc-100 dark:border-zinc-900 bg-zinc-50/50 dark:bg-zinc-900/20">
+        <motion.div variants={item} className="bg-white dark:bg-zinc-900/50 rounded-2xl border border-zinc-200 dark:border-zinc-800/80 shadow-[inset_0_1px_1px_rgba(255,255,255,0.02)] overflow-hidden flex flex-col">
+          <div className="p-6 border-b border-zinc-100 dark:border-zinc-800/80 bg-zinc-50/50 dark:bg-zinc-900/20">
             <h3 className="font-semibold text-zinc-900 dark:text-zinc-50 flex items-center gap-2">
               <Activity size={16} className="text-zinc-500" />
               Recent Activity
@@ -135,7 +139,7 @@ export function DashboardView() {
               <motion.div 
                 initial={{ opacity: 0, x: -10 }}
                 animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: 0.4 + (i * 0.1) }}
+                transition={{ type: "spring" as any, bounce: 0, duration: 0.5, delay: 0.3 + (i * 0.05) }}
                 key={log.id} 
                 className="flex gap-4 group"
               >
@@ -144,7 +148,7 @@ export function DashboardView() {
                     {getActivityIcon(log.action)}
                   </div>
                   {i !== recentActivity.length - 1 && (
-                    <div className="absolute top-7 bottom-[-20px] left-1/2 w-[1px] bg-zinc-100 dark:bg-zinc-800 -translate-x-1/2" />
+                    <div className="absolute top-7 bottom-[-20px] left-1/2 w-[1px] border-l-2 border-dashed border-zinc-200 dark:border-zinc-800/60 -translate-x-1/2" />
                   )}
                 </div>
                 <div>
@@ -179,14 +183,19 @@ interface StatCardProps {
 }
 
 const itemVariant: Variants = {
-  hidden: { opacity: 0, scale: 0.95 },
-  show: { opacity: 1, scale: 1, transition: { type: "spring" as any, stiffness: 300, damping: 24 } }
+  hidden: { opacity: 0, scale: 0.98, y: 5 },
+  show: { opacity: 1, scale: 1, y: 0, transition: { type: "spring" as any, bounce: 0, duration: 0.6 } }
 };
 
 function StatCard({ title, value, icon: Icon, color, bg }: StatCardProps) {
   return (
-    <motion.div variants={itemVariant} className="group relative bg-white dark:bg-zinc-950 p-6 rounded-2xl border border-zinc-200 dark:border-zinc-800 shadow-sm hover:shadow-md transition-all hover:-translate-y-1 overflow-hidden">
-      <div className="absolute inset-0 bg-gradient-to-br from-white/50 to-transparent dark:from-white/5 opacity-0 group-hover:opacity-100 transition-opacity" />
+    <motion.div 
+      variants={itemVariant} 
+      whileHover={{ scale: 1.015 }}
+      transition={{ type: "spring" as any, bounce: 0, duration: 0.4 }}
+      className="group relative bg-white dark:bg-zinc-900/50 p-6 rounded-2xl border border-zinc-200 dark:border-zinc-800/80 shadow-[inset_0_1px_1px_rgba(255,255,255,0.02)] overflow-hidden cursor-default"
+    >
+      <div className="absolute inset-0 bg-gradient-to-br from-white/50 to-transparent dark:from-white/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
       <div className="flex flex-col gap-4 relative">
         <div className="flex items-center justify-between">
           <div className={`p-3 rounded-xl ${bg} ${color} transition-transform group-hover:scale-110`}>

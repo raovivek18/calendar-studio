@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { format, startOfMonth, endOfMonth, eachDayOfInterval, addMonths, subMonths } from "date-fns";
+import { format, startOfMonth, endOfMonth, eachDayOfInterval, addMonths, subMonths, startOfWeek, endOfWeek, addWeeks, subWeeks } from "date-fns";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
@@ -25,14 +25,15 @@ export function CalendarView() {
   const [selectedPost, setSelectedPost] = useState<Post | null>(null);
   const [defaultDate, setDefaultDate] = useState<string>("");
   const [activeId, setActiveId] = useState<string | null>(null);
+  const [view, setView] = useState<'month' | 'week'>('month');
   
-  const monthStart = startOfMonth(currentDate);
-  const monthEnd = endOfMonth(currentDate);
-  const days = eachDayOfInterval({ start: monthStart, end: monthEnd });
+  const dateStart = view === 'month' ? startOfMonth(currentDate) : startOfWeek(currentDate);
+  const dateEnd = view === 'month' ? endOfMonth(currentDate) : endOfWeek(currentDate);
+  const days = eachDayOfInterval({ start: dateStart, end: dateEnd });
 
   const supabase = useSupabase();
   const queryClient = useQueryClient();
-  const queryKey = ['posts', format(monthStart, 'yyyy-MM')];
+  const queryKey = ['posts', format(dateStart, 'yyyy-MM-dd'), view];
 
   const { data: posts, refetch } = useQuery({
     queryKey,
@@ -40,8 +41,8 @@ export function CalendarView() {
       const { data, error } = await supabase
         .from('posts')
         .select('*')
-        .gte('date', format(monthStart, 'yyyy-MM-dd'))
-        .lte('date', format(monthEnd, 'yyyy-MM-dd'));
+        .gte('date', format(dateStart, 'yyyy-MM-dd'))
+        .lte('date', format(dateEnd, 'yyyy-MM-dd'));
       
       if (error) throw error;
       return data as Post[];
@@ -78,8 +79,8 @@ export function CalendarView() {
     return () => window.removeEventListener('open-new-post-dialog', handleNewPost);
   }, []);
 
-  const nextMonth = () => setCurrentDate(addMonths(currentDate, 1));
-  const prevMonth = () => setCurrentDate(subMonths(currentDate, 1));
+  const next = () => setCurrentDate(view === 'month' ? addMonths(currentDate, 1) : addWeeks(currentDate, 1));
+  const prev = () => setCurrentDate(view === 'month' ? subMonths(currentDate, 1) : subWeeks(currentDate, 1));
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -135,12 +136,14 @@ export function CalendarView() {
       <div className="flex flex-col h-full bg-white dark:bg-zinc-950 rounded-xl">
         <div className="flex items-center justify-between p-4 border-b border-zinc-200 dark:border-zinc-800">
           <div className="flex items-center gap-4">
-            <h3 className="text-lg font-semibold">{format(currentDate, "MMMM yyyy")}</h3>
+            <h3 className="text-lg font-semibold w-48">
+              {view === 'month' ? format(currentDate, "MMMM yyyy") : `Week of ${format(dateStart, "MMM d")}`}
+            </h3>
             <div className="flex items-center gap-1">
-              <Button variant="outline" size="icon" onClick={prevMonth} className="h-7 w-7">
+              <Button variant="outline" size="icon" onClick={prev} className="h-7 w-7">
                 <ChevronLeft size={14} />
               </Button>
-              <Button variant="outline" size="icon" onClick={nextMonth} className="h-7 w-7">
+              <Button variant="outline" size="icon" onClick={next} className="h-7 w-7">
                 <ChevronRight size={14} />
               </Button>
             </div>
@@ -148,8 +151,18 @@ export function CalendarView() {
           <div className="flex items-center gap-2">
             <Button variant="outline" size="sm" onClick={() => setCurrentDate(new Date())}>Today</Button>
             <div className="bg-zinc-100 dark:bg-zinc-800 rounded-md p-1 flex items-center">
-              <button className="px-3 py-1 text-xs font-medium rounded shadow-sm bg-white dark:bg-zinc-700 text-zinc-900 dark:text-white">Month</button>
-              <button className="px-3 py-1 text-xs font-medium rounded text-zinc-500 hover:text-zinc-900 dark:hover:text-white">Week</button>
+              <button 
+                onClick={() => setView('month')}
+                className={`px-3 py-1 text-xs font-medium rounded ${view === 'month' ? 'shadow-sm bg-white dark:bg-zinc-700 text-zinc-900 dark:text-white' : 'text-zinc-500 hover:text-zinc-900 dark:hover:text-white'}`}
+              >
+                Month
+              </button>
+              <button 
+                onClick={() => setView('week')}
+                className={`px-3 py-1 text-xs font-medium rounded ${view === 'week' ? 'shadow-sm bg-white dark:bg-zinc-700 text-zinc-900 dark:text-white' : 'text-zinc-500 hover:text-zinc-900 dark:hover:text-white'}`}
+              >
+                Week
+              </button>
             </div>
           </div>
         </div>
@@ -165,8 +178,8 @@ export function CalendarView() {
               ))}
             </div>
 
-            <div className="flex-1 grid grid-cols-7 auto-rows-fr">
-              {Array.from({ length: monthStart.getDay() }).map((_, i) => (
+            <div className={`flex-1 grid grid-cols-7 ${view === 'month' ? 'auto-rows-fr' : 'auto-rows-max min-h-0'}`}>
+              {view === 'month' && Array.from({ length: dateStart.getDay() }).map((_, i) => (
                 <div key={`empty-${i}`} className="border-r border-b border-zinc-200 dark:border-zinc-800 p-2 opacity-50 bg-zinc-50 dark:bg-zinc-900/50" />
               ))}
               
