@@ -1,5 +1,6 @@
 "use client";
 
+import { memo } from "react";
 import { useDraggable } from "@dnd-kit/core";
 import { CSS } from "@dnd-kit/utilities";
 import { GripVertical } from "lucide-react";
@@ -9,21 +10,25 @@ type Post = Database["public"]["Tables"]["posts"]["Row"];
 
 interface CalendarPostProps {
   post: Post;
+  isOverlay?: boolean;
 }
 
-export function CalendarPost({ post }: CalendarPostProps) {
+export const CalendarPost = memo(function CalendarPost({ post, isOverlay = false }: CalendarPostProps) {
   const { attributes, listeners, setNodeRef, transform, isDragging } = useDraggable({
     id: post.id,
     data: {
       type: 'Post',
       post,
-    }
+    },
+    disabled: isOverlay,
   });
 
   const style = {
     transform: CSS.Translate.toString(transform),
-    opacity: isDragging ? 0.5 : 1,
-    zIndex: isDragging ? 50 : 1,
+    opacity: isDragging ? 0.3 : 1,
+    zIndex: isOverlay ? 999 : isDragging ? 50 : 1,
+    cursor: isOverlay ? 'grabbing' : 'default',
+    boxShadow: isOverlay ? '0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1)' : 'none',
   };
 
   const statusColors = {
@@ -44,17 +49,19 @@ export function CalendarPost({ post }: CalendarPostProps) {
     <div
       ref={setNodeRef}
       style={style}
-      className={`relative group flex flex-col p-1.5 rounded text-xs font-medium border cursor-default shadow-sm ${statusColors[post.status] || statusColors.draft}`}
+      className={`relative group flex flex-col p-1.5 rounded text-xs font-medium border shadow-sm transition-shadow ${statusColors[post.status] || statusColors.draft} ${isOverlay ? 'scale-105' : ''}`}
     >
       <div className="flex items-center justify-between gap-1 mb-1">
         <span className="truncate">{post.title}</span>
-        <div 
-          className="cursor-grab opacity-0 group-hover:opacity-100 p-0.5 hover:bg-black/5 dark:hover:bg-white/10 rounded active:cursor-grabbing"
-          {...listeners} 
-          {...attributes}
-        >
-          <GripVertical size={12} />
-        </div>
+        {!isOverlay && (
+          <div 
+            className="cursor-grab opacity-0 group-hover:opacity-100 p-0.5 hover:bg-black/5 dark:hover:bg-white/10 rounded active:cursor-grabbing"
+            {...listeners} 
+            {...attributes}
+          >
+            <GripVertical size={12} />
+          </div>
+        )}
       </div>
       <div className="flex items-center gap-1 opacity-70">
         <span className="font-bold text-[9px] uppercase tracking-wider">{platformIconMap[post.platform]}</span>
@@ -62,4 +69,4 @@ export function CalendarPost({ post }: CalendarPostProps) {
       </div>
     </div>
   );
-}
+});

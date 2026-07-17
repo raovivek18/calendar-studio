@@ -4,7 +4,11 @@ import { useState, useEffect } from "react";
 import { Sidebar } from "./sidebar";
 import { Header } from "./header";
 import { Sheet, SheetContent } from "@/components/ui/sheet";
-import { CommandPalette } from "./command-palette";
+import dynamic from "next/dynamic";
+
+const CommandPalette = dynamic(() => import("./command-palette").then(m => m.CommandPalette), {
+  ssr: false,
+});
 
 export function DashboardLayout({ children }: { children: React.ReactNode }) {
   const [isCollapsed, setIsCollapsed] = useState(false);

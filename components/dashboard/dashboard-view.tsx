@@ -2,7 +2,7 @@
 
 import { useQuery } from "@tanstack/react-query";
 import { useSupabase } from "@/hooks/use-supabase";
-import { Activity, Calendar, Clock, FileEdit, CheckCircle2 } from "lucide-react";
+import { Activity, Calendar, Clock, FileEdit, CheckCircle2, LucideIcon } from "lucide-react";
 
 export function DashboardView() {
   const supabase = useSupabase();
@@ -82,7 +82,14 @@ export function DashboardView() {
   );
 }
 
-function StatCard({ title, value, icon: Icon, color }: any) {
+interface StatCardProps {
+  title: string;
+  value: number;
+  icon: LucideIcon;
+  color: string;
+}
+
+function StatCard({ title, value, icon: Icon, color }: StatCardProps) {
   return (
     <div className="bg-white dark:bg-zinc-950 p-6 rounded-xl border border-zinc-200 dark:border-zinc-800 shadow-sm flex items-center gap-4">
       <div className={`p-3 rounded-full bg-zinc-50 dark:bg-zinc-900 ${color}`}>

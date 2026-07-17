@@ -5,6 +5,15 @@ import { useSupabase } from "@/hooks/use-supabase";
 import { Bell, CheckCircle2, Info, AlertTriangle, XCircle } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 
+interface Notification {
+  id: string;
+  title: string;
+  message?: string;
+  type: string;
+  created_at: string;
+  read: boolean;
+}
+
 export function InboxView() {
   const supabase = useSupabase();
 
@@ -13,7 +22,7 @@ export function InboxView() {
     queryFn: async () => {
       const { data, error } = await supabase.functions.invoke('notifications');
       if (error) throw error;
-      return data;
+      return data as Notification[];
     }
   });
 
@@ -43,7 +52,7 @@ export function InboxView() {
   return (
     <div className="flex flex-col h-full bg-white dark:bg-zinc-950">
       <div className="flex-1 overflow-y-auto">
-        {notifications.map((notification: any) => (
+        {notifications.map((notification: Notification) => (
           <div 
             key={notification.id} 
             className={`flex items-start gap-4 p-4 border-b border-zinc-200 dark:border-zinc-800 hover:bg-zinc-50 dark:hover:bg-zinc-900/50 transition-colors ${!notification.read ? 'bg-blue-50/50 dark:bg-blue-900/10' : ''}`}

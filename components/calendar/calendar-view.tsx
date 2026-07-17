@@ -6,12 +6,16 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useSupabase } from "@/hooks/use-supabase";
-import { DndContext, DragEndEvent, closestCenter, PointerSensor, useSensor, useSensors } from "@dnd-kit/core";
+import { DndContext, DragEndEvent, DragStartEvent, closestCenter, PointerSensor, useSensor, useSensors, DragOverlay } from "@dnd-kit/core";
 import { CalendarDay } from "./calendar-day";
 import { CalendarPost } from "./calendar-post";
-import { PostDialog } from "./post-dialog";
+import dynamic from "next/dynamic";
 import { toast } from "sonner";
 import type { Database } from "@/types/supabase";
+
+const PostDialog = dynamic(() => import("./post-dialog").then(m => m.PostDialog), {
+  ssr: false,
+});
 
 type Post = Database["public"]["Tables"]["posts"]["Row"];
 
@@ -20,6 +24,7 @@ export function CalendarView() {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [selectedPost, setSelectedPost] = useState<Post | null>(null);
   const [defaultDate, setDefaultDate] = useState<string>("");
+  const [activeId, setActiveId] = useState<string | null>(null);
   
   const monthStart = startOfMonth(currentDate);
   const monthEnd = endOfMonth(currentDate);
@@ -84,7 +89,12 @@ export function CalendarView() {
     })
   );
 
+  const handleDragStart = (event: DragStartEvent) => {
+    setActiveId(event.active.id as string);
+  };
+
   const handleDragEnd = async (event: DragEndEvent) => {
+    setActiveId(null);
     const { active, over } = event;
     if (!over) return;
     
@@ -118,8 +128,10 @@ export function CalendarView() {
     }
   };
 
+  const activePost = posts?.find(p => p.id === activeId);
+
   return (
-    <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
+    <DndContext sensors={sensors} collisionDetection={closestCenter} onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
       <div className="flex flex-col h-full bg-white dark:bg-zinc-950 rounded-xl">
         <div className="flex items-center justify-between p-4 border-b border-zinc-200 dark:border-zinc-800">
           <div className="flex items-center gap-4">
@@ -193,6 +205,9 @@ export function CalendarView() {
           </div>
         </div>
       </div>
+      <DragOverlay>
+        {activePost ? <CalendarPost post={activePost} isOverlay={true} /> : null}
+      </DragOverlay>
       <PostDialog 
         open={isDialogOpen} 
         onOpenChange={setIsDialogOpen}
