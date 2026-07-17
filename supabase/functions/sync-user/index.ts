@@ -59,7 +59,10 @@ serve(async (req: Request) => {
     return new Response(JSON.stringify({ profile }), {
       headers: { "Content-Type": "application/json", "Access-Control-Allow-Origin": "*" },
     });
-  } catch (error: any) {
-    return new Response(JSON.stringify({ error: error.message }), { status: 400 });
+  } catch (error) {
+    return new Response(JSON.stringify({ error: (error as Error).message }), { 
+      status: 400,
+      headers: { "Content-Type": "application/json" }
+    });
   }
 });

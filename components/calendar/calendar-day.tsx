@@ -25,7 +25,16 @@ export const CalendarDay = memo(function CalendarDay({ day, currentDate, childre
   return (
     <div 
       ref={setNodeRef}
-      className={`min-h-[120px] p-2 border-r border-b border-zinc-200 dark:border-zinc-800 transition-colors cursor-pointer group ${
+      role="button"
+      tabIndex={0}
+      aria-label={`Date: ${format(day, 'MMMM d, yyyy')}`}
+      onKeyDown={(e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          e.currentTarget.click();
+        }
+      }}
+      className={`min-h-[120px] p-2 border-r border-b border-zinc-200 dark:border-zinc-800 transition-colors cursor-pointer group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-900 focus-visible:ring-inset dark:focus-visible:ring-zinc-100 ${
         !isCurrentMonth ? 'bg-zinc-50 dark:bg-zinc-900/50 text-zinc-400' : 'bg-white dark:bg-zinc-950 hover:bg-zinc-50 dark:hover:bg-zinc-900/50'
       } ${isOver ? 'bg-zinc-100 dark:bg-zinc-800' : ''}`}
     >

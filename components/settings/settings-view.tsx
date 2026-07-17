@@ -17,7 +17,7 @@ export function SettingsView() {
   const [timezone, setTimezone] = useState("UTC");
   const [notificationsEnabled, setNotificationsEnabled] = useState(true);
 
-  const { data: settings, isLoading } = useQuery({
+  const { data: settings } = useQuery({
     queryKey: ['settings', user?.id],
     enabled: !!user?.id,
     queryFn: async () => {
@@ -33,13 +33,15 @@ export function SettingsView() {
 
   useEffect(() => {
     if (settings) {
+      // eslint-disable-next-line react-hooks/exhaustive-deps
       setTimezone(settings.timezone || "UTC");
       setNotificationsEnabled(settings.notifications_enabled ?? true);
       if (settings.theme && settings.theme !== theme) {
         setTheme(settings.theme);
       }
     }
-  }, [settings, setTheme]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [settings]);
 
   const handleSave = async () => {
     if (!user) return;
@@ -56,8 +58,8 @@ export function SettingsView() {
         
       if (error) throw error;
       toast.success("Settings saved");
-    } catch (error: any) {
-      toast.error(error.message || "Failed to save settings");
+    } catch (error) {
+      toast.error((error as Error).message || "Failed to save settings");
     }
   };
 

@@ -10,7 +10,6 @@ import {
   Settings, 
   ChevronLeft, 
   ChevronRight,
-  Plus,
   CircleDashed,
   CheckCircle2,
   Clock,

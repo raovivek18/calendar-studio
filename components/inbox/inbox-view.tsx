@@ -44,7 +44,7 @@ export function InboxView() {
       <div className="flex flex-col items-center justify-center h-full text-zinc-500 bg-zinc-50 dark:bg-zinc-900/20">
         <Bell className="h-12 w-12 mb-4 opacity-20" />
         <p className="text-lg font-medium">All caught up!</p>
-        <p className="text-sm opacity-70">You don't have any new notifications.</p>
+        <p className="text-sm opacity-70">You don&apos;t have any new notifications.</p>
       </div>
     );
   }

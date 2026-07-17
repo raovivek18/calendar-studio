@@ -49,13 +49,25 @@ export const CalendarPost = memo(function CalendarPost({ post, isOverlay = false
     <div
       ref={setNodeRef}
       style={style}
-      className={`relative group flex flex-col p-1.5 rounded text-xs font-medium border shadow-sm transition-shadow ${statusColors[post.status] || statusColors.draft} ${isOverlay ? 'scale-105' : ''}`}
+      role="button"
+      tabIndex={isOverlay ? -1 : 0}
+      aria-label={`Post: ${post.title} on ${post.platform}`}
+      onKeyDown={(e) => {
+        if (!isOverlay && (e.key === 'Enter' || e.key === ' ')) {
+          e.preventDefault();
+          e.currentTarget.click();
+        }
+      }}
+      className={`relative group flex flex-col p-1.5 rounded text-xs font-medium border shadow-sm transition-shadow focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-900 dark:focus-visible:ring-zinc-100 ${statusColors[post.status] || statusColors.draft} ${isOverlay ? 'scale-105' : ''}`}
     >
       <div className="flex items-center justify-between gap-1 mb-1">
         <span className="truncate">{post.title}</span>
         {!isOverlay && (
           <div 
-            className="cursor-grab opacity-0 group-hover:opacity-100 p-0.5 hover:bg-black/5 dark:hover:bg-white/10 rounded active:cursor-grabbing"
+            className="cursor-grab opacity-0 group-hover:opacity-100 p-0.5 hover:bg-black/5 dark:hover:bg-white/10 rounded active:cursor-grabbing focus-visible:opacity-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-500"
+            role="button"
+            aria-label="Drag to move post"
+            tabIndex={0}
             {...listeners} 
             {...attributes}
           >

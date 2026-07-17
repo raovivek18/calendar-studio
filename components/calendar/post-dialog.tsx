@@ -90,8 +90,8 @@ export function PostDialog({ open, onOpenChange, post, defaultDate }: PostDialog
       // Invalidate queries to refresh data
       queryClient.invalidateQueries({ queryKey: ['posts'] });
       onOpenChange(false);
-    } catch (error: any) {
-      toast.error(error.message || "Something went wrong");
+    } catch (error) {
+      toast.error((error as Error).message || "Something went wrong");
     }
   };
 
@@ -106,8 +106,8 @@ export function PostDialog({ open, onOpenChange, post, defaultDate }: PostDialog
       toast.success("Post deleted successfully");
       queryClient.invalidateQueries({ queryKey: ['posts'] });
       onOpenChange(false);
-    } catch (error: any) {
-      toast.error(error.message || "Failed to delete post");
+    } catch (error) {
+      toast.error((error as Error).message || "Failed to delete post");
     } finally {
       setIsDeleting(false);
     }
@@ -158,7 +158,7 @@ export function PostDialog({ open, onOpenChange, post, defaultDate }: PostDialog
               <label className="text-sm font-medium">Platform</label>
               <Select 
                 value={form.watch("platform")} 
-                onValueChange={(val: any) => form.setValue("platform", val)}
+                onValueChange={(val: string) => form.setValue("platform", val as any)}
                 disabled={isWorking}
               >
                 <SelectTrigger>
@@ -176,9 +176,9 @@ export function PostDialog({ open, onOpenChange, post, defaultDate }: PostDialog
             <div className="space-y-2">
               <label className="text-sm font-medium">Status</label>
               <Select 
-                value={form.watch("status")} 
-                onValueChange={(val: any) => form.setValue("status", val)}
                 disabled={isWorking}
+                onValueChange={(val: string) => form.setValue("status", val as any)} 
+                value={form.watch("status")}
               >
                 <SelectTrigger>
                   <SelectValue placeholder="Select status" />

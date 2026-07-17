@@ -4,6 +4,9 @@ import { useQuery } from "@tanstack/react-query";
 import { useSupabase } from "@/hooks/use-supabase";
 import { Image as ImageIcon, FileText, Upload, Trash2, Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import type { Database } from "@/types/supabase";
+
+type Attachment = Database["public"]["Tables"]["attachments"]["Row"];
 
 export function LibraryView() {
   const supabase = useSupabase();
@@ -16,7 +19,7 @@ export function LibraryView() {
         .select('*')
         .order('created_at', { ascending: false });
       if (error) throw error;
-      return data;
+      return data as Attachment[];
     }
   });
 
@@ -54,7 +57,7 @@ export function LibraryView() {
           </div>
         ) : (
           <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
-            {attachments.map((file: any) => (
+            {attachments.map((file: Attachment) => (
               <div key={file.id} className="group relative aspect-square bg-zinc-100 dark:bg-zinc-900 rounded-lg overflow-hidden border border-zinc-200 dark:border-zinc-800 flex flex-col">
                 {file.file_type?.startsWith('image/') ? (
                   <div className="flex-1 bg-cover bg-center" style={{ backgroundImage: `url(${file.file_url})` }} />
