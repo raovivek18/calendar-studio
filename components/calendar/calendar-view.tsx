@@ -61,6 +61,18 @@ export function CalendarView() {
     };
   }, [supabase, refetch]);
 
+  // Global event listener for new post
+  useEffect(() => {
+    const handleNewPost = () => {
+      setSelectedPost(null);
+      setDefaultDate(format(new Date(), 'yyyy-MM-dd'));
+      setIsDialogOpen(true);
+    };
+
+    window.addEventListener('open-new-post-dialog', handleNewPost);
+    return () => window.removeEventListener('open-new-post-dialog', handleNewPost);
+  }, []);
+
   const nextMonth = () => setCurrentDate(addMonths(currentDate, 1));
   const prevMonth = () => setCurrentDate(subMonths(currentDate, 1));
 
@@ -130,50 +142,55 @@ export function CalendarView() {
           </div>
         </div>
         
-        <div className="grid grid-cols-7 border-b border-zinc-200 dark:border-zinc-800">
-          {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(day => (
-            <div key={day} className="p-2 text-center text-xs font-medium text-zinc-500 uppercase tracking-wider">
-              {day}
+        
+        <div className="flex-1 overflow-x-auto">
+          <div className="min-w-[800px] h-full flex flex-col">
+            <div className="grid grid-cols-7 border-b border-zinc-200 dark:border-zinc-800">
+              {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(day => (
+                <div key={day} className="p-2 text-center text-xs font-medium text-zinc-500 uppercase tracking-wider">
+                  {day}
+                </div>
+              ))}
             </div>
-          ))}
-        </div>
 
-        <div className="flex-1 grid grid-cols-7 auto-rows-fr">
-          {Array.from({ length: monthStart.getDay() }).map((_, i) => (
-            <div key={`empty-${i}`} className="border-r border-b border-zinc-200 dark:border-zinc-800 p-2 opacity-50 bg-zinc-50 dark:bg-zinc-900/50" />
-          ))}
-          
-          {days.map(day => {
-            const dayPosts = posts?.filter(p => p.date === format(day, 'yyyy-MM-dd')) || [];
-            return (
-              <div 
-                key={day.toISOString()}
-                onClick={(e) => {
-                  // Only open create dialog if clicked directly on the day cell, not a post
-                  if ((e.target as HTMLElement).closest('[data-post="true"]')) return;
-                  setDefaultDate(format(day, 'yyyy-MM-dd'));
-                  setSelectedPost(null);
-                  setIsDialogOpen(true);
-                }}
-              >
-                <CalendarDay day={day} currentDate={currentDate}>
-                  {dayPosts.map(post => (
-                    <div 
-                      key={post.id} 
-                      data-post="true"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setSelectedPost(post);
-                        setIsDialogOpen(true);
-                      }}
-                    >
-                      <CalendarPost post={post} />
-                    </div>
-                  ))}
-                </CalendarDay>
-              </div>
-            );
-          })}
+            <div className="flex-1 grid grid-cols-7 auto-rows-fr">
+              {Array.from({ length: monthStart.getDay() }).map((_, i) => (
+                <div key={`empty-${i}`} className="border-r border-b border-zinc-200 dark:border-zinc-800 p-2 opacity-50 bg-zinc-50 dark:bg-zinc-900/50" />
+              ))}
+              
+              {days.map(day => {
+                const dayPosts = posts?.filter(p => p.date === format(day, 'yyyy-MM-dd')) || [];
+                return (
+                  <div 
+                    key={day.toISOString()}
+                    onClick={(e) => {
+                      // Only open create dialog if clicked directly on the day cell, not a post
+                      if ((e.target as HTMLElement).closest('[data-post="true"]')) return;
+                      setDefaultDate(format(day, 'yyyy-MM-dd'));
+                      setSelectedPost(null);
+                      setIsDialogOpen(true);
+                    }}
+                  >
+                    <CalendarDay day={day} currentDate={currentDate}>
+                      {dayPosts.map(post => (
+                        <div 
+                          key={post.id} 
+                          data-post="true"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setSelectedPost(post);
+                            setIsDialogOpen(true);
+                          }}
+                        >
+                          <CalendarPost post={post} />
+                        </div>
+                      ))}
+                    </CalendarDay>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
         </div>
       </div>
       <PostDialog 

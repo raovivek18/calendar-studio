@@ -38,6 +38,7 @@ export function Header({ toggleSidebar, isSidebarCollapsed }: HeaderProps) {
         <div className="relative hidden sm:block">
           <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-zinc-500" />
           <input
+            id="global-search-input"
             type="search"
             placeholder="Search posts (Cmd+K)"
             className="h-9 w-64 rounded-md border border-zinc-200 bg-zinc-50 pl-9 pr-4 text-sm outline-none transition-all focus:border-zinc-400 focus:ring-1 focus:ring-zinc-400 dark:border-zinc-800 dark:bg-zinc-900 dark:focus:border-zinc-700"
@@ -56,7 +57,10 @@ export function Header({ toggleSidebar, isSidebarCollapsed }: HeaderProps) {
           <span className="absolute right-1 top-1 flex h-2 w-2 rounded-full bg-red-500" />
         </button>
 
-        <Button className="gap-2 bg-zinc-900 text-white hover:bg-zinc-800 dark:bg-white dark:text-zinc-900 dark:hover:bg-zinc-200">
+        <Button 
+          onClick={() => window.dispatchEvent(new CustomEvent('open-new-post-dialog'))}
+          className="gap-2 bg-zinc-900 text-white hover:bg-zinc-800 dark:bg-white dark:text-zinc-900 dark:hover:bg-zinc-200"
+        >
           <Plus size={16} />
           <span className="hidden sm:inline">New Post</span>
         </Button>
